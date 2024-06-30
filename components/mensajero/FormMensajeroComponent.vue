@@ -74,7 +74,7 @@ export default {
                 }
                 this.loading = true;
                 if(this.editando){
-                    await this.$axios.post('mensajero/actualizar/' + this.mensajero.id, this.form);
+                    await this.$axios.put('mensajero/actualizar/' + this.mensajero.id, this.form);
                     this.$toast.success('Mensajero actualizado con exito.')
                 } else {
                     await this.$axios.post('mensajero/crear', this.form);
@@ -89,6 +89,10 @@ export default {
             } finally {
                 this.loading = false;
             }
+        },
+
+        asignarData(){
+            this.form.nombre = this.mensajero.nombre
         },
 
         limpiar() {

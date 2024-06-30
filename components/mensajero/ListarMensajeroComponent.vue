@@ -17,16 +17,23 @@
                             </v-btn>
                         </template>
 
-                        <FormMensajeroComponent @submit="listar()" @cerrar="dialog = false" :editando="editando" :mensajero="mensajero"/>
+                        <FormMensajeroComponent @submit="listar()" @cerrar="dialog = false" :editando="editando"
+                            :mensajero="mensajero" />
 
                     </v-dialog>
                 </v-toolbar>
             </template>
-            <template v-slot:item.actions="{ item }">
-                <v-icon small @click="eliminar(item)">
-                    mdi-pencil
-                </v-icon>
+
+            <template v-slot:item.activo="{ item }">
+                <v-chip :color="item.activo ? 'success' : 'error'" @click="cambiarEstado(item)">
+                    {{ item.activo ? "activo" : "Inactivo" }}
+                </v-chip>
             </template>
+
+            <template v-slot:item.actions="{ item }">
+                <v-chip outlined @click="editar(item)">Editar</v-chip>
+            </template>
+
         </v-data-table>
 
         <AlertComponent ref="alertComponent" />
@@ -49,14 +56,15 @@ export default {
         dialog: false,
         headers: [
             { text: 'id#', value: 'id' },
-            { text: 'Nombre', value: 'nombre'},
+            { text: 'Nombre', value: 'nombre' },
+            { text: 'Estado', value: 'activo' },
             { text: 'Acciones', value: 'actions', sortable: false },
         ],
     }),
 
     watch: {
         dialog(val) {
-            if(!val){
+            if (!val) {
                 this.editando = false
                 this.mensajero = null
             }
@@ -85,9 +93,24 @@ export default {
         },
 
         /**
+         * cambia el estado
+         */
+        async cambiarEstado(item) {
+            const request = { activo: !item.activo }
+            try {
+                const { data } = await this.$axios.put('mensajero/cambiar-estado/' + item.id, request)
+                this.$toast.success('El mensajero ' + item.nombre + ' paso a estar ' + request.activo ? "activo" : "Inactivo")
+                this.listar()
+            } catch (error) {
+                this.toast.error('Hubo un error al intentar cambiar el estado')
+                console.log(error.response)
+            }
+        },
+
+        /**
          * elimina un usuario
          */
-        editar(item){
+        editar(item) {
             this.editando = true
             this.mensajero = item
             this.dialog = true
