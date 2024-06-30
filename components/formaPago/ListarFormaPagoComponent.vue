@@ -5,7 +5,7 @@
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title class="d-flex align-center">
-                        Forma Pagos
+                        Formas de Pago
                     </v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
@@ -13,7 +13,7 @@
 
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                                Nuevo forma Pago
+                                Nueva forma de Pago
                             </v-btn>
                         </template>
 
@@ -22,10 +22,15 @@
                     </v-dialog>
                 </v-toolbar>
             </template>
+
+            <template v-slot:item.activo="{ item }">
+                <v-chip :color="item.activo ? 'success' : 'error'" @click="cambiarEstado(item)">
+                    {{ item.activo ? "activo" : "Inactivo" }}
+                </v-chip>
+            </template>
+
             <template v-slot:item.actions="{ item }">
-                <v-icon small @click="eliminar(item)">
-                    mdi-pencil
-                </v-icon>
+                <v-chip outlined @click="editar(item)">Editar</v-chip>
             </template>
         </v-data-table>
 
@@ -50,6 +55,7 @@ export default {
         headers: [
             { text: 'id#', value: 'id' },
             { text: 'Nombre', value: 'nombre'},
+            { text: 'Estado', value: 'activo'},
             { text: 'Acciones', value: 'actions', sortable: false },
         ],
     }),
@@ -75,12 +81,27 @@ export default {
         async listar() {
             try {
                 this.loading = true
-                const { data } = await this.$axios.get('formaPago/listar')
+                const { data } = await this.$axios.get('forma-pago/listar')
                 this.formaPagos = data
             } catch (error) {
                 console.log(error.response)
             } finally {
                 this.loading = false
+            }
+        },
+
+        /**
+         * cambia el estado
+         */
+         async cambiarEstado(item){
+            const request = { activo : !item.activo }
+            try {
+                const { data } = await this.$axios.put('forma-pago/cambiar-estado/' + item.id, request)
+                this.$toast.success('El forma de pago ' + item.nombre + ' paso a estar ' + (request.activo ? "activo" : "Inactivo"))
+                this.listar()
+            } catch (error) {
+                this.toast.error('Hubo un error al intentar cambiar el estado')
+                console.log(error.response)
             }
         },
 

@@ -1,11 +1,11 @@
 <template>
     <v-card :loading="loading" :disabled="loading" elevation="0" class="rounded-xxl pa-4 overflow-hidden">
         <v-card-title class="d-flex align-center">
-            {{ editando ? 'Editar' : 'Crear' }} formaPago
+            {{ editando ? 'Editar' : 'Crear' }} forma de pago
         </v-card-title>
         <v-card-text>
 
-            <v-form v-model="valid" ref="form" lazy-validation>
+            <v-form v-model="valid" ref="form" lazy-validation @submit.prevent="submit">
                 <v-text-field label="nombre" v-model="form.nombre" :rules="rules.nombre"></v-text-field>
             </v-form>
 
@@ -74,7 +74,7 @@ export default {
                 }
                 this.loading = true;
                 if(this.editando){
-                    await this.$axios.post('forma-pago/actualizar/' + this.formaPago.id, this.form);
+                    await this.$axios.put('forma-pago/actualizar/' + this.formaPago.id, this.form);
                     this.$toast.success('Forma de pago actualizada con exito.')
                 } else {
                     await this.$axios.post('forma-pago/crear', this.form);
@@ -89,6 +89,10 @@ export default {
             } finally {
                 this.loading = false;
             }
+        },
+
+        asignarData(){
+            this.form.nombre = this.formaPago.nombre
         },
 
         limpiar() {

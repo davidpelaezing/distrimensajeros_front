@@ -98,7 +98,7 @@ export default {
             const request = { activo : !item.activo }
             try {
                 const { data } = await this.$axios.put('cliente/cambiar-estado/' + item.id, request)
-                this.$toast.success('El cliente ' + item.nombre + ' paso a estar ' + request.activo ? "activo" : "Inactivo")
+                this.$toast.success('El cliente ' + item.nombre + ' paso a estar ' + (request.activo ? "activo" : "Inactivo"))
                 this.listar()
             } catch (error) {
                 this.toast.error('Hubo un error al intentar cambiar el estado')

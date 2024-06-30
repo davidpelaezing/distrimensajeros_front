@@ -5,7 +5,7 @@
         </v-card-title>
         <v-card-text>
 
-            <v-form v-model="valid" ref="form" lazy-validation>
+            <v-form v-model="valid" ref="form" lazy-validation @submit.prevent="submit">
                 <v-text-field label="nombre" v-model="form.nombre" :rules="rules.nombre"></v-text-field>
             </v-form>
 
