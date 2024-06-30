@@ -30,7 +30,7 @@
                 <template v-slot:activator="{ attrs, on }">
                     <v-btn icon v-bind="attrs" v-on="on">
                         <v-avatar>
-                            <v-img src="https://randomuser.me/api/portraits/women/85.jpg"></v-img>
+                            <v-img :src="'https://ui-avatars.com/api/?name='+ $store.state.auth.authUser.name +'&background=0D8ABC&color=fff&size=128'"></v-img>
                         </v-avatar>
                     </v-btn>
                 </template>
@@ -84,9 +84,9 @@ export default {
             selectedItem: 0,
             items: [
                 { text: 'Facturas', icon: 'mdi-note-multiple', link: '/', roles: ['administrador', 'supervisor', 'operario'] },
-                { text: 'Clientes', icon: 'mdi-folder', link: '/clientes', roles: ['administrador', 'supervisor', 'operario'] },
-                //{ text: 'Resoluciones', icon: 'mdi-book', link: '/resoluciones', roles: ['administrador', 'supervisor'] },
-                //{ text: 'Parqueaderos', icon: 'mdi-car', link: '/parqueaderos', roles: ['administrador'] },
+                { text: 'Clientes', icon: 'mdi-account-multiple-check', link: '/clientes', roles: ['administrador', 'supervisor', 'operario'] },
+                { text: 'Mensajeros', icon: 'mdi-motorbike', link: '/mensajeros', roles: ['administrador', 'supervisor', 'operario'] },
+                { text: 'Formas de pago', icon: 'mdi-credit-card-multiple-outline', link: '/forma-pagos', roles: ['administrador', 'supervisor', 'operario'] },
                 { text: 'Usuarios', icon: 'mdi-account-multiple', link: '/usuarios', roles: ['administrador'] },
             ],
         }

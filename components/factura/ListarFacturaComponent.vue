@@ -53,7 +53,7 @@
 
             </v-data-table>
 
-            <v-dialog v-model="dialogCerrarFactura">
+            <v-dialog v-model="dialogCerrarFactura" max-width="700px">
                 <FormCerrarFacturaComponent @cerrar="dialogCerrarFactura = false"/>
             </v-dialog>
 

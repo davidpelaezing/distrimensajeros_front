@@ -1,12 +1,11 @@
 <template>
     <v-card :loading="loading" :disabled="loading" elevation="0" class="rounded-xxl pa-4 overflow-hidden">
 
-        <v-data-table :headers="headers" :items="clientes">
-
+        <v-data-table :headers="headers" :items="mensajeros">
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title class="d-flex align-center">
-                        Clientes
+                        Mensajeros
                     </v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
@@ -14,24 +13,19 @@
 
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                                Nuevo cliente
+                                Nuevo mensajero
                             </v-btn>
                         </template>
 
-                        <FormClienteComponent @submit="listar()" @cerrar="dialog = false" :editando="editando" :cliente="cliente"/>
+                        <FormMensajeroComponent @submit="listar()" @cerrar="dialog = false" :editando="editando" :mensajero="mensajero"/>
 
                     </v-dialog>
                 </v-toolbar>
             </template>
-
-            <template v-slot:item.activo="{ item }">
-                <v-chip :color="item.activo ? 'success' : 'error'" @click="cambiarEstado(item)">
-                    {{ item.activo ? "activo" : "Inactivo" }}
-                </v-chip>
-            </template>
-
             <template v-slot:item.actions="{ item }">
-                <v-chip outlined @click="editar(item)">Editar</v-chip>
+                <v-icon small @click="eliminar(item)">
+                    mdi-pencil
+                </v-icon>
             </template>
         </v-data-table>
 
@@ -40,23 +34,22 @@
 </template>
 <script>
 import AlertComponent from '@/components/helpers/AlertComponent'
-import FormClienteComponent from '@/components/cliente/FormClienteComponent'
+import FormMensajeroComponent from '@/components/mensajero/FormMensajeroComponent'
 
 export default {
     components: {
         AlertComponent,
-        FormClienteComponent
+        FormMensajeroComponent
     },
     data: () => ({
         loading: false,
-        clientes: [],
-        cliente: null,
+        mensajeros: [],
+        mensajero: null,
         editando: false,
         dialog: false,
         headers: [
             { text: 'id#', value: 'id' },
             { text: 'Nombre', value: 'nombre'},
-            { text: 'Estado', value: 'activo'},
             { text: 'Acciones', value: 'actions', sortable: false },
         ],
     }),
@@ -65,7 +58,7 @@ export default {
         dialog(val) {
             if(!val){
                 this.editando = false
-                this.cliente = null
+                this.mensajero = null
             }
         },
     },
@@ -77,13 +70,13 @@ export default {
     methods: {
 
         /**
-         * lista los clientes
+         * lista los mensajeros
          */
         async listar() {
             try {
                 this.loading = true
-                const { data } = await this.$axios.get('cliente/listar')
-                this.clientes = data
+                const { data } = await this.$axios.get('mensajero/listar')
+                this.mensajeros = data
             } catch (error) {
                 console.log(error.response)
             } finally {
@@ -92,26 +85,11 @@ export default {
         },
 
         /**
-         * cambia el estado
-         */
-        async cambiarEstado(item){
-            const request = { activo : !item.activo }
-            try {
-                const { data } = await this.$axios.put('cliente/cambiar-estado/' + item.id, request)
-                this.$toast.success('El cliente ' + item.nombre + ' paso a estar ' + request.activo ? "activo" : "Inactivo")
-                this.listar()
-            } catch (error) {
-                this.toast.error('Hubo un error al intentar cambiar el estado')
-                console.log(error.response)
-            }
-        },
-
-        /**
          * elimina un usuario
          */
         editar(item){
             this.editando = true
-            this.cliente = item
+            this.mensajero = item
             this.dialog = true
         }
 

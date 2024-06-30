@@ -10,11 +10,7 @@
                 <v-text-field v-model="form.email" :rules="rules.email" label="Email" required></v-text-field>
                 <v-text-field v-if="!editando" v-model="form.password" :rules="rules.password" type="password" label="Contraseña"
                     required></v-text-field>
-
                 <v-select v-model="form.rol" :items="roles" :rules="rules.rol" label="Rol"></v-select>
-                <v-select v-model="form.parqueaderos" :items="parqueaderos" :rules="rules.parqueaderos" item-value="token"
-                    item-text="nombre" label="Parqueadero" multiple></v-select>
-
             </v-form>
 
         </v-card-text>
@@ -45,7 +41,7 @@ export default {
         return {
             loading: false,
             valid: false,
-            roles: ['administrador', 'supervisor', 'operario'],
+            roles: ['administrador', 'operario'],
             parqueaderos: [],
             form: {
                 name: '',

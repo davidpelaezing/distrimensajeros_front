@@ -1,7 +1,7 @@
 <template>
     <v-card :loading="loading" :disabled="loading" elevation="0" class="rounded-xxl pa-4 overflow-hidden">
         <v-card-title class="d-flex align-center">
-            {{ editando ? 'Editar' : 'Crear' }} cliente
+            {{ editando ? 'Editar' : 'Crear' }} formaPago
         </v-card-title>
         <v-card-text>
 
@@ -27,7 +27,7 @@ export default {
             type: Boolean,
             default: false
         },
-        cliente: {
+        formaPago: {
             type: Object,
             default: null
         }
@@ -74,11 +74,11 @@ export default {
                 }
                 this.loading = true;
                 if(this.editando){
-                    await this.$axios.put('cliente/actualizar/' + this.cliente.id, this.form);
-                    this.$toast.success('Cliente actualizado con exito.')
+                    await this.$axios.post('forma-pago/actualizar/' + this.formaPago.id, this.form);
+                    this.$toast.success('Forma de pago actualizada con exito.')
                 } else {
-                    await this.$axios.post('cliente/crear', this.form);
-                    this.$toast.success('Cliente creado con exito.')
+                    await this.$axios.post('forma-pago/crear', this.form);
+                    this.$toast.success('Forma de pago creada con exito.')
                 }
                 this.$emit('submit')
                 this.$emit('cerrar')
@@ -89,10 +89,6 @@ export default {
             } finally {
                 this.loading = false;
             }
-        },
-
-        asignarData(){
-            this.form.nombre = this.cliente.nombre
         },
 
         limpiar() {
