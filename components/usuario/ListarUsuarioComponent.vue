@@ -16,7 +16,8 @@
                                 </v-btn>
                             </template>
                             <!-- Form usuarios -->
-                            <FormUsuarioComponent @submit="listarUsuarios()" @cerrar="dialog = false" :editando="editando" :usuario="usuario" />
+                            <FormUsuarioComponent @submit="listar()" @cerrar="dialog = false"
+                                :editando="editando" :usuario="usuario" />
                         </v-dialog>
                     </v-toolbar>
                 </template>
@@ -32,6 +33,17 @@
                     </v-tooltip>
 
                 </template>
+
+                <template v-slot:item.activo="{ item }">
+                    <v-chip :color="item.activo ? 'success' : 'error'" @click="cambiarEstado(item)">
+                        {{ item.activo ? "activo" : "Inactivo" }}
+                    </v-chip>
+                </template>
+
+                <template v-slot:item.actions="{ item }">
+                    <v-chip outlined @click="editar(item)">Editar</v-chip>
+                </template>
+
             </v-data-table>
         </v-card-text>
         <AlertComponent ref="alertComponent" />
@@ -55,15 +67,23 @@ export default {
         headers: [
             {
                 text: "Nombre",
-                value: "name",
+                value: "nombre",
             },
             {
                 text: "Email",
                 value: "email",
             },
             {
+                text: "Documento",
+                value: "documento",
+            },
+            {
                 text: "Rol",
                 value: "rol",
+            },
+            {
+                text: "Estado",
+                value: "activo",
             },
             {
                 text: "Actions",
@@ -87,19 +107,34 @@ export default {
     },
 
     created() {
-        this.listarUsuarios();
+        this.listar();
     },
 
     methods: {
         /**
          * lista los usuarios
          */
-        async listarUsuarios() {
+        async listar() {
             try {
                 const { data } = await this.$axios.get("usuario/listar");
                 this.usuarios = data;
             } catch (error) {
                 console.log(error);
+            }
+        },
+
+        /**
+         * cambia el estado
+         */
+         async cambiarEstado(item){
+            const request = { activo : !item.activo }
+            try {
+                const { data } = await this.$axios.put('usuario/cambiar-estado/' + item.id, request)
+                this.$toast.success('El usuario ' + item.nombre + ' paso a estar ' + (request.activo ? "activo" : "Inactivo"))
+                this.listar()
+            } catch (error) {
+                this.toast.error('Hubo un error al intentar cambiar el estado')
+                console.log(error.response)
             }
         },
 
@@ -111,18 +146,6 @@ export default {
             this.usuario = item;
             this.dialog = true;
             console.log(item)
-        },
-
-        /**
-         * elimina un usuario
-         */
-        async eliminar(item) {
-            try {
-                const { data } = await this.$axios.get("usuario/eliminar/" + item.id);
-                this.listarUsuarios();
-            } catch (error) {
-                console.log(error);
-            }
         },
 
     },

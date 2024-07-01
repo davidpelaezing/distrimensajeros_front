@@ -5,11 +5,10 @@
         </v-card-title>
         <v-card-text>
 
-            <v-form v-model="valid" ref="form" lazy-validation>
-                <v-text-field v-model="form.name" :rules="rules.name" label="Nombre" required></v-text-field>
+            <v-form v-model="valid" ref="form" lazy-validation @submit.prevent="submit">
+                <v-text-field v-model="form.nombre" :rules="rules.nombre" label="Nombre" required></v-text-field>
                 <v-text-field v-model="form.email" :rules="rules.email" label="Email" required></v-text-field>
-                <v-text-field v-if="!editando" v-model="form.password" :rules="rules.password" type="password" label="Contraseña"
-                    required></v-text-field>
+                <v-text-field v-model="form.documento" :rules="rules.documento" label="Documento" required></v-text-field>
                 <v-select v-model="form.rol" :items="roles" :rules="rules.rol" label="Rol"></v-select>
             </v-form>
 
@@ -42,16 +41,14 @@ export default {
             loading: false,
             valid: false,
             roles: ['administrador', 'operario'],
-            parqueaderos: [],
             form: {
-                name: '',
+                nombre: '',
                 email: '',
-                password: '',
+                documento: '',
                 rol: '',
-                parqueaderos: [],
             },
             rules: {
-                name: [
+                nombre: [
                     v => !!v || 'Nombre es requerido',
                     v => v.length > 4 || 'El nombre debe tener almenos 4 caracteres',
                 ],
@@ -61,33 +58,29 @@ export default {
                     v => /.+@.+/.test(v) || 'Debe de ser un email valido',
                 ],
 
-                password: [
-                    v => !!v || 'Contraseña es requerida',
-                    v => v.length >= 8 || 'La contraseña debe tener almenos 8 caracteres',
+                documento: [
+                    v => !!v || 'Documento es requerido',
+                    v => v.length >= 8 || 'El documento debe tener almenos 8 caracteres',
                 ],
 
                 rol: [
                     v => !!v || 'Debes seleccionar un rol',
                 ],
-
-                parqueaderos: [
-                    v => v.length > 0 || 'Debes seleccionar Al menos un parqueadero',
-                ],
-
             }
         }
     },
 
     watch: {
-        usuario() {
-            if (this.editando) {
-                this.asignarData()
+        editando(val){
+            if(val){
+                this.asignarData();
+            } else {
+                this.limpiar();
             }
         }
     },
 
     mounted() {
-        this.getParqueaderos()
         if(this.editando){
             this.asignarData()
         }
@@ -101,7 +94,7 @@ export default {
         async submit() {
             try {
                 if(this.editando){
-                    await this.$axios.put('usuario/editar/' + this.usuario._id, this.form);
+                    await this.$axios.put('usuario/actualizar/' + this.usuario.id, this.form);
                 } else {
                     await this.$axios.post('usuario/crear', this.form);
                 }
@@ -115,39 +108,21 @@ export default {
             }
         },
 
-        /**
-         * lista los paruqeaderos disponibles
-         */
-        async getParqueaderos() {
-            try {
-                this.loading = true;
-                const { data } = await this.$axios.get('/parqueadero/listar');
-                this.parqueaderos = data
-            } catch (error) {
-                console.log(error);
-                console.log(error.response);
-            } finally {
-                this.loading = false;
-            }
-        },
-
         asignarData(){
             this.form = {
-                name: this.usuario.name,
+                nombre: this.usuario.nombre,
                 email: this.usuario.email,
-                password: '',
+                documento: this.usuario.documento,
                 rol: this.usuario.rol,
-                parqueaderos: this.usuario.parqueaderos,
             }
         },
 
         limpiar() {
             this.form = {
-                name: '',
+                nombre: '',
                 email: '',
-                password: '',
+                documento: '',
                 rol: '',
-                parqueaderos: '',
             }
             this.resetValidation()
         },
