@@ -102,8 +102,8 @@ export default {
          */
         async submit() {
             try {
+                await this.logout()
                 this.$router.push('/login');
-                this.logout()
             } catch (error) {
                 console.error(error);
                 console.error(error.response);

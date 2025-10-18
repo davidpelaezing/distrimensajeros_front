@@ -9,23 +9,20 @@
             <v-form v-model="valid" ref="form" lazy-validation>
                 <v-row>
                     <v-col cols="12">
-                        <v-text-field v-model="form.fecha" label="Fecha" type="date" required></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                        <v-autocomplete v-model="form.mensajero_id" :items="mensajeros"
+                        <v-autocomplete v-model="form.mensajero_id" :rules="rules.mensajero_id" :items="mensajeros" item-value="id" item-text="nombre"
                             label="Mensajeros"></v-autocomplete>
                     </v-col>
                     <v-col cols="12">
-                        <v-autocomplete v-model="form.cliente_id" :items="clientes" label="Clientes"></v-autocomplete>
+                        <v-autocomplete v-model="form.cliente_id" :rules="rules.cliente_id" :items="clientes" item-value="id" item-text="nombre" label="Clientes"></v-autocomplete>
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field v-model="form.factura" ref="factura" label="Factura" required></v-text-field>
+                        <v-text-field v-model="form.factura" :rules="rules.factura" ref="factura" label="Factura" required></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field v-model="form.recibo" label="Recibo" required></v-text-field>
+                        <v-text-field v-model="form.recibo" :rules="rules.recibo" label="Recibo" required></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                        <v-text-field v-model.number="form.valor" label="Valor" @keyup.enter="submit()"
+                        <v-text-field v-model.number="form.valor" :rules="rules.valor" label="Valor" @keyup.enter="submit()"
                             required></v-text-field>
                     </v-col>
                 </v-row>
@@ -55,66 +52,90 @@ export default {
         return {
             loading: false,
             valid: false,
-            mensajeros: [
-                'david',
-                'carlos',
-                'felipe',
-                'maria'
-            ],
-            clientes: [
-                'telas SA',
-                'camisetas SA',
-                'empanadas SA',
-            ],
+            mensajeros: [],
+            clientes: [],
             form: {
-                fecha: '2024-06-08',
                 mensajero_id: null,
+                cliente_id: null,
                 factura: null,
                 recibo: null,
-                cliente_id: null,
-                hora_salida: null,
                 valor: null,
+            },
+            rules: {
+                mensajero_id: [v =>!!v || 'Este campos es requerido'],
+                cliente_id: [v =>!!v || 'Este campo es requerido'],
+                factura: [v =>!!v || 'Este campo es requerido'],
+                recibo: [v =>!!v || 'Este campo es requerido'],
+                valor: [v =>!!v || 'Este campo es requerido'],
             }
         }
     },
 
     mounted(){
+
         if(this.editando){
             this.asignarData()
         }
+
+        this.getMensajeros();
+        this.getClientes();
+
     },
 
     watch: {
         editando(valor){
             if(valor){
                 this.asignarData()
+            }else{
+                this.limpiar()
             }
         }
     },
 
     methods: {
 
-        ...mapMutations('factura', ['AGREGAR_FACTURA']),
-
-        async submit(cerrar = false) {
+        /**
+         * Submitea el formulario
+         */
+         async submit() {
             try {
-                const request = {
-                    fecha: this.form.fecha,
-                    mensajero_id: this.form.mensajero_id,
-                    factura: this.form.factura,
-                    recibo: this.form.recibo,
-                    cliente_id: this.form.cliente_id,
-                    hora_salida: this.form.hora_salida,
-                    valor: this.form.valor,
+                if(!this.$refs.form.validate()){
+                    return;
                 }
-                this.AGREGAR_FACTURA(request)
+                this.loading = true;
+                if(this.editando){
+                    await this.$axios.put('factura/actualizar/' + this.factura.id, this.form);
+                    this.$toast.success('Factura actualizada con exito.')
+                } else {
+                    await this.$axios.post('factura/crear', this.form);
+                    this.$toast.success('Factura creada con exito.')
+                }
+                this.$emit('submit')
+                this.$emit('cerrar')
                 this.limpiar()
-
-                if (cerrar) {
-                    this.$emit('cerrar')
-                }
             } catch (error) {
-                console.log(error)
+                this.$toast.error(error.response.data.error);
+                console.log(error.response)
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async getMensajeros(){
+            try {
+                const { data } = await this.$axios.get('/mensajero/listar-activos')
+                this.mensajeros = data
+            } catch (error) {
+                this.$toast.error('Error al listar los mensajeros')
+            }
+        },
+
+        async getClientes(){
+            try {
+                const { data } = await this.$axios.get('/cliente/listar-activos')
+                this.clientes = data
+            } catch (error) {
+                this.$toast.error('Error al listar los mensajeros')
             }
         },
 

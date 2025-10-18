@@ -18,10 +18,10 @@
                             </template>
                             <FormFacturaComponent 
                                 @cerrar="dialog = false"
+                                @submit="listarDespachadas()"
                                 :editando="editando"
                                 :factura="factura"
-                                >
-                            </FormFacturaComponent>
+                                />
                         </v-dialog>
                     </v-toolbar>
 
@@ -30,31 +30,20 @@
 
                 </template>
 
-                <template v-slot:[`item.actions`]="{ item }">
+                <template v-slot:item.actions="{ item }">
 
-                    <v-tooltip top>
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-icon color="primary" @click="editar(item)" v-bind="attrs" v-on="on">
-                                mdi-pencil
-                            </v-icon>
-                        </template>
-                        <span>Editar</span>
-                    </v-tooltip>
+                    <v-chip outlined @click="editar(item)">Editar</v-chip>
+                    <v-chip color="primary" outlined @click="cerrarFactura(item)">Cerrar</v-chip>
 
-                    <v-tooltip top>
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-icon color="primary" @click="dialogCerrarFactura = true" v-bind="attrs" v-on="on">
-                                mdi-hand-okay
-                            </v-icon>
-                        </template>
-                        <span>Cerrar</span>
-                    </v-tooltip>
                 </template>
 
             </v-data-table>
 
             <v-dialog v-model="dialogCerrarFactura" max-width="700px">
-                <FormCerrarFacturaComponent @cerrar="dialogCerrarFactura = false"/>
+                <FormCerrarFacturaComponent 
+                    @cerrar="dialogCerrarFactura = false"
+                    :factura="facturaCerrar"
+                />
             </v-dialog>
 
 
@@ -81,6 +70,8 @@ export default {
 
     data: () => ({
         factura: {},
+        facturaCerrar: {},
+        facturas: [],
         editando: false,
         loading: false,
         search: '',
@@ -89,7 +80,7 @@ export default {
         headers: [
             {
                 text: "Fecha",
-                value: "fecha",
+                value: "created_at",
             },
             {
                 text: "Nro factura",
@@ -103,12 +94,12 @@ export default {
             },
             {
                 text: "Mensajero",
-                value: "mensajero_id",
+                value: "mensajero.nombre",
                 sortable: false,
             },
             {
                 text: "Cliente",
-                value: "cliente_id",
+                value: "cliente.nombre",
                 sortable: false,
             },
             {
@@ -129,21 +120,42 @@ export default {
                 this.editando = false;
                 this.factura = {};
             }
+        },
+
+        dialogCerrarFactura(valor){
+            if(!valor){
+                this.facturaCerrar = {};
+                this.listarDespachadas()
+            }
         }
+
     },
 
-    computed: {
-        ...mapState('factura', ['facturas'])
+    mounted(){
+        this.listarDespachadas()
     },
 
     methods: {
-        ...mapGetters('auth', ['userAuthenticated']),
+
+        async listarDespachadas(){
+            try {
+                const {data} = await this.$axios.get('factura/listar-despachadas')
+                this.facturas = data
+            } catch (error) {
+                console.log('Erro al listar')
+            }
+        },
 
         editar(item){
             this.dialog = true;
             this.editando = true;
             this.factura = item;
         },
+
+        cerrarFactura(item){
+            this.dialogCerrarFactura = true;
+            this.facturaCerrar = item
+        }
 
     }
 };
