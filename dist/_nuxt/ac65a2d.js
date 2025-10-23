@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[28],{584:function(t,n,o){"use strict";o.r(n);var e={layout:"default",middleware:["auth"],meta:{roles:["administrador"]},components:{ListarUsuarioComponent:o(572).default}},r=o(78),component=Object(r.a)(e,(function(){return(0,this._self._c)("ListarUsuarioComponent")}),[],!1,null,null,null);n.default=component.exports}}]);
