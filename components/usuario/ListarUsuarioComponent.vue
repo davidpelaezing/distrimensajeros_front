@@ -40,10 +40,10 @@
                     </v-chip>
                 </template>
 
-                <template v-slot:item.actions="{ item }">
-                    <v-btn color="primary" small @click="editar(item)">Editar</v-btn>
-                    <v-btn color="red" small @click="restablecer(item)">Restablecer Contraseña</v-btn>
-                </template>
+        <template v-slot:item.actions="{ item }">
+          <v-btn color="primary" small @click="editar(item)">Editar</v-btn>
+          <v-icon color="red" small @click="restablecer(item)">mdi-lock-check</v-icon>
+        </template>
 
 
             </v-data-table>
