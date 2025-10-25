@@ -135,7 +135,7 @@ export default {
                 const { data } = await this.$axios.get('/cliente/listar-activos')
                 this.clientes = data
             } catch (error) {
-                this.$toast.error('Error al listar los mensajeros')
+                this.$toast.error('Error al listar los Clientes')
             }
         },
 
