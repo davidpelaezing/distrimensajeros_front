@@ -25,7 +25,7 @@
         </v-col>
         <v-col cols="12" md="6">
           <p class="mb-0">Total de la factura</p>
-          <h1 class="mb-0"><strong>{{ factura?.valor }}</strong></h1>
+          <h1 class="mb-0"><strong>{{ $formatPesos(factura?.valor) }}</strong></h1>
         </v-col>
       </v-row>
     </v-card-text>
@@ -45,6 +45,11 @@
           <v-col cols="12">
             <v-text-field v-model.number="form.valor" :rules="rules.valor_id" label="Valor" required></v-text-field>
           </v-col>
+
+          <v-col cols="12">
+            <v-textarea outlined v-model="form.observacion" label="Observacion"></v-textarea>
+          </v-col>
+
         </v-row>
       </v-form>
 
@@ -67,7 +72,7 @@
           {{mensajeros.find(m => m.id === item.mensajero_id)?.nombre || 'Desconocido'}}
         </template>
         <template v-slot:footer>
-          <h3>Total: 0</h3>
+          <h3>Total: {{ $formatPesos(totalPagado) }}</h3>
         </template>
       </v-data-table>
     </v-card-text>
@@ -115,6 +120,12 @@ export default {
         this.asignarData()
         this.listarPagos()
       }
+    },
+  },
+
+  computed: {
+    totalPagado() {
+      return this.pagos.reduce((acc, pago) => acc + pago.valor, 0)
     }
   },
 
@@ -175,8 +186,8 @@ export default {
 
         const response = await this.$axios.post('factura-detalle/crear', request);
         this.$toast.success('Detalle creada con exito.')
-
-        this.limpiar()
+        this.limpiar();
+        this.$emit('cerrar')
       } catch (error) {
         this.$toast.error(error.response.data.error);
         console.log(error.response)

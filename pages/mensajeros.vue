@@ -7,7 +7,7 @@ export default {
     layout: 'default',
     middleware: 'auth',
     meta: {
-        roles: ['administrador', 'supervisor', 'operario']
+        roles: ['administrador', 'supervisor']
     },
     components: {
         ListarMensajeroComponent

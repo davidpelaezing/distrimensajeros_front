@@ -65,7 +65,6 @@ export default {
                 mensajero_id: [v =>!!v || 'Este campos es requerido'],
                 cliente_id: [v =>!!v || 'Este campo es requerido'],
                 factura: [v =>!!v || 'Este campo es requerido'],
-                recibo: [v =>!!v || 'Este campo es requerido'],
                 valor: [v =>!!v || 'Este campo es requerido'],
             }
         }
