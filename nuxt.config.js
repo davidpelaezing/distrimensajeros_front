@@ -33,6 +33,7 @@ export default {
         '@/plugins/localStorage.js',
         '@/plugins/axios.js',
         '@/plugins/moment.js',
+        '@/plugins/formatPesos.js'
     ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components

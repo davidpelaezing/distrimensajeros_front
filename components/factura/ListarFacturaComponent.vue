@@ -16,7 +16,7 @@
                   Nueva factura
                 </v-btn>
               </template>
-              <FormFacturaComponent @cerrar="dialog = false" @submit="listarDespachadas()" :editando="editando"
+              <FormFacturaComponent @cerrar="dialog = false" @submit="listar()" :editando="editando"
                 :factura="factura" />
             </v-dialog>
           </v-toolbar>
@@ -149,22 +149,22 @@ export default {
     dialogCerrarFactura(valor) {
       if (!valor) {
         this.facturaCerrar = {};
-        this.listarDespachadas()
+        this.listar()
       }
     }
 
   },
 
   mounted() {
-    this.listarDespachadas()
+    this.listar()
     this.getMensajeros()
   },
 
   methods: {
 
-    async listarDespachadas() {
+    async listar() {
       try {
-        const { data } = await this.$axios.get('factura/listar-despachadas')
+        const { data } = await this.$axios.get('factura/listar')
         this.facturas = data
       } catch (error) {
         console.log('Erro al listar')
@@ -174,9 +174,9 @@ export default {
     async listarHistorial() {
       try {
         const { mensajero_id, fecha_inicio, fecha_fin } = this.filtro;
-          console.log('Filtros enviados:', { mensajero_id, fecha_inicio, fecha_fin });
+
         if (!mensajero_id && !fecha_inicio && !fecha_fin) {
-          return this.listarDespachadas();
+          return this.listar();
         }
 
         const { data } = await this.$axios.get('factura/listar-historial-factura', {
@@ -219,7 +219,7 @@ export default {
       this.filtro.mensajero_id = null;
       this.filtro.fecha_inicio = null;
       this.filtro.fecha_fin = null;
-      this.listarDespachadas();
+      this.listar();
     }
 
   }
