@@ -11,8 +11,8 @@ export default {
 
     // Global page headers: https://go.nuxtjs.dev/config-head
     head: {
-        titleTemplate: '%s - DistriMensajeros',
-        title: 'DistriMensajeros',
+        titleTemplate: '%s - distri-mensajeros',
+        title: 'distri-mensajeros',
         meta: [
             { charset: 'utf-8' },
             { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -32,6 +32,7 @@ export default {
     plugins: [
         '@/plugins/localStorage.js',
         '@/plugins/axios.js',
+        '@/plugins/moment.js',
     ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components

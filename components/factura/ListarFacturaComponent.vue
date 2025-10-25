@@ -48,11 +48,13 @@
 
         </template>
 
-        <template v-slot:item.actions="{ item }">
+        <template v-slot:item.created_at="{ item }">
+          <v-chip>{{ $moment(item.created_at).format('DD/MM/YYYY HH:mm') }}</v-chip>
+        </template>
 
+        <template v-slot:item.actions="{ item }">
           <v-chip outlined @click="editar(item)">Editar</v-chip>
           <v-chip color="primary" outlined @click="cerrarFactura(item)">Cerrar</v-chip>
-
         </template>
 
       </v-data-table>
@@ -102,6 +104,7 @@ export default {
       {
         text: "Fecha",
         value: "created_at",
+        sortable: true,
       },
       {
         text: "Nro factura",
