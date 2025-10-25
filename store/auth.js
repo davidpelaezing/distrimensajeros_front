@@ -26,12 +26,14 @@ export const actions = {
     },
 
     logout({ commit }) {
-        // Limpia el token en Vuex y en el localStorage al cerrar sesión
-        commit('SET_AUTH_TOKEN', null);
-        localStorage.removeItem('authToken');
+        return this.$axios.post("/auth/logout", form).then(({ data }) => {
+            // Limpia el token en Vuex y en el localStorage al cerrar sesión
+            commit('SET_AUTH_TOKEN', null);
+            localStorage.removeItem('authToken');
 
-        commit('SET_AUTH_USER', null);
-        localStorage.removeItem('authUser');
+            commit('SET_AUTH_USER', null);
+            localStorage.removeItem('authUser');
+        });
     },
 };
 
