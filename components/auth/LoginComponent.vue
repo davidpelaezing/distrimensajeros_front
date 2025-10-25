@@ -15,13 +15,6 @@
                 </v-btn>
             </v-form>
         </v-card-text>
-
-        <v-card-actions class="justify-center">
-            <NuxtLink to="/auth/recuperar-password">
-                ¿ Olvidaste tu contraseña ?
-            </NuxtLink>
-        </v-card-actions>
-
     </v-card>
 </template>
 <script>
