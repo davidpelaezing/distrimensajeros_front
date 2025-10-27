@@ -67,7 +67,7 @@
                 </template>
 
                 <template v-slot:item.actions="{ item }">
-                    <v-chip v-if="item.estado_id != 3" outlined @click="editar(item)">Editar</v-chip>
+                    <v-chip outlined @click="editar(item)">Editar</v-chip>
                     <v-chip v-if="item.estado_id != 3" color="primary" outlined @click="cerrarFactura(item)">Cerrar</v-chip>
                     <v-chip color="info" outlined :to="`/factura/${item.factura}`">Ver</v-chip>
                 </template>
@@ -90,6 +90,7 @@
 import AlertComponent from "@/components/helpers/AlertComponent";
 import FormFacturaComponent from "@/components/factura/FormFacturaComponent";
 import FormCerrarFacturaComponent from "@/components/factura/FormCerrarFacturaComponent";
+import { mapGetters } from 'vuex'
 
 export default {
     components: {
