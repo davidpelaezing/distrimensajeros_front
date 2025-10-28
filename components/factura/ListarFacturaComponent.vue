@@ -54,19 +54,16 @@
                             <v-btn dark color="red" class="mr-2" @click="limpiarFiltros()">
                                 Limpiar
                             </v-btn>
-                            <v-btn dark color="grey" @click="exportar()">
-                                Exportar
-                            </v-btn>
                         </v-col>
                     </div>
 
                 </template>
 
-                <template v-slot:item.created_at="{ item }">
+                <template v-slot:[`item.created_at`]="{ item }">
                     <v-chip>{{ $moment(item.created_at).format('DD/MM/YYYY HH:mm') }}</v-chip>
                 </template>
 
-                <template v-slot:item.actions="{ item }">
+                <template v-slot:[`item.actions`]="{ item }">
                     <v-chip outlined @click="editar(item)">Editar</v-chip>
                     <v-chip v-if="item.estado_id != 3" color="primary" outlined @click="cerrarFactura(item)">Cerrar</v-chip>
                     <v-chip color="info" outlined :to="`/factura/${item.factura}`">Ver</v-chip>
@@ -205,27 +202,6 @@ export default {
                 this.mensajeros = data
             } catch (error) {
                 this.$toast.error('Error al listar los mensajeros')
-            }
-        },
-
-        exportar: async function () {
-            try {
-                const response = await this.$axios.get('factura/exportar', {
-                    responseType: 'blob'
-                })
-
-                const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-                const url = window.URL.createObjectURL(blob)
-
-                const link = document.createElement('a')
-                link.href = url
-                link.setAttribute('download', 'detalle_facturas.xlsx')
-                document.body.appendChild(link)
-                link.click()
-
-                window.URL.revokeObjectURL(url)
-            } catch (error) {
-                console.error('Error al exportar las facturas:', error)
             }
         },
 
