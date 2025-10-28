@@ -31,9 +31,8 @@
         </v-card-text>
 
         <v-card-actions>
-            <v-btn color="primary" @click="submit()" v-if="!editando">Guardar y crear otro</v-btn>
-            <v-btn color="primary" @click="submit(true)">{{ editando ? 'Actualizar' : 'Crear'}}</v-btn>
             <v-btn color="error" @click="$emit('cerrar')">Cancelar</v-btn>
+            <v-btn color="primary" @click="submit(true)">{{ editando ? 'Actualizar' : 'Crear'}}</v-btn>
         </v-card-actions>
 
     </v-card>

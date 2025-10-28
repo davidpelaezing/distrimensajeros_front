@@ -41,6 +41,16 @@
                         </v-col>
 
                         <v-col cols="12">
+                            <v-select v-model="filtro.cliente_id" :items="clientes" item-value="id" item-text="nombre"
+                                label="Clientes"></v-select>
+                        </v-col>
+
+                        <v-col cols="12">
+                            <v-select v-model="filtro.forma_pago_id" :items="formaPagos" item-value="id"
+                                item-text="nombre" label="Forma de pago"></v-select>
+                        </v-col>
+
+                        <v-col cols="12">
                             <v-select v-model="filtro.estado_id" :items="estados" item-value="id" item-text="nombre"
                                 label="Estado"></v-select>
                         </v-col>
@@ -68,7 +78,8 @@
 
                 <template v-slot:item.actions="{ item }">
                     <v-chip outlined @click="editar(item)">Editar</v-chip>
-                    <v-chip v-if="item.estado_id != 3" color="primary" outlined @click="cerrarFactura(item)">Cerrar</v-chip>
+                    <v-chip v-if="item.estado_id != 3" color="primary" outlined
+                        @click="cerrarFactura(item)">Cerrar</v-chip>
                     <v-chip color="info" outlined :to="`/factura/${item.factura}`">Ver</v-chip>
                 </template>
 
@@ -104,6 +115,8 @@ export default {
         facturaCerrar: {},
         facturas: [],
         mensajeros: [],
+        clientes: [],
+        formaPagos: [],
         editando: false,
         loading: false,
         search: '',
@@ -119,6 +132,8 @@ export default {
             mensajero_id: null,
             fecha_fin: null,
             fecha_inicio: null,
+            cliente_id: null,
+            forma_pago_id: null,
             estado_id: null
         },
         headers: [
@@ -184,18 +199,23 @@ export default {
     mounted() {
         this.listar()
         this.getMensajeros()
+        this.getClientes()
+        this.getFormasDePago()
     },
 
     methods: {
 
         async listar() {
             try {
+                this.loading = true
                 const { data } = await this.$axios.get('factura/listar', {
                     params: this.filtro
                 })
                 this.facturas = data
             } catch (error) {
                 console.log('Erro al listar')
+            } finally {
+                this.loading = false
             }
         },
 
@@ -205,6 +225,24 @@ export default {
                 this.mensajeros = data
             } catch (error) {
                 this.$toast.error('Error al listar los mensajeros')
+            }
+        },
+
+        async getClientes() {
+            try {
+                const { data } = await this.$axios.get('/cliente/listar')
+                this.clientes = data
+            } catch (error) {
+                this.$toast.error('Error al listar los clientes')
+            }
+        },
+
+        async getFormasDePago() {
+            try {
+                const { data } = await this.$axios.get('/forma-pago/listar-activos')
+                this.formaPagos = data
+            } catch (error) {
+                this.$toast.error('Error al listar las formas de pago')
             }
         },
 

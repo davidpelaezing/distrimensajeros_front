@@ -1,61 +1,79 @@
 <template>
-    <v-row>
-        <v-col class="mx-auto" cols="12" sm="12" md="12">
-            <v-card :loading="loading" :diasable="loading">
+
+    <v-card :loading="loading" :diasable="loading">
+        <v-card-title>
+            <v-toolbar flat>
+                <v-toolbar-title>
+                    <div class="d-flex align-center">
+                        <span>Factura {{ factura.factura }}</span>
+                    </div>
+                </v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
+            </v-toolbar>
+        </v-card-title>
+
+        <v-card-text>
+
+            <v-row>
+                <v-col cols="12" md="6">
+                    <h4># Factura</h4>
+                    <p class="text-h4 font-weight-black">{{ factura.factura }}</p>
+
+                    <h4>Total</h4>
+                    <p class="text-h4 font-weight-black">{{ $formatPesos(factura.valor) }}</p>
+                </v-col>
+                <v-col cols="12" md="6">
+                    <h4>Mensajero</h4>
+                    <p>{{ factura.mensajero.nombre }}</p>
+
+                    <h4>Cliente</h4>
+                    <p>{{ factura.cliente.nombre }}</p>
+                </v-col>
+            </v-row>
+        </v-card-text>
+
+        <v-card-text>
+            <v-data-table :headers="headers" :items="factura.detalles">
+
+                <template v-slot:item.valor="{ item }">
+                    {{ $formatPesos(item.valor) }}
+                </template>
+
+                <template v-slot:item.created_at="{ item }">
+                    {{ $moment(item.created_at).format('DD/MM/YYYY-HH:mm') }}
+                </template>
+
+                <template v-slot:item.actions="{ item }">
+                    <v-chip color="info" outlined @click="editar(item)">Editar</v-chip>
+                </template>
+            </v-data-table>
+        </v-card-text>
+
+        <v-dialog v-model="dialogs.editar" max-width="500px">
+            <v-card>
                 <v-card-title>
-                    <v-toolbar flat>
-                        <v-toolbar-title>
-                            <div class="d-flex align-center">
-                                <span>Factura {{ factura.factura }}</span>
-                            </div>
-                        </v-toolbar-title>
-                        <v-divider class="mx-4" inset vertical></v-divider>
-                    </v-toolbar>
+                    Editar detalle factura {{ item ? item.id : '' }}
                 </v-card-title>
-
                 <v-card-text>
-
-                    <v-row>
-                        <v-col cols="12" md="6">
-                            <h4># Factura</h4>
-                            <p class="text-h4 font-weight-black">{{ factura.factura }}</p>
-
-                            <h4>Total</h4>
-                            <p class="text-h4 font-weight-black">{{ $formatPesos(factura.valor) }}</p>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                            <h4>Mensajero</h4>
-                            <p>{{ factura.mensajero.nombre }}</p>
-
-                            <h4>Cliente</h4>
-                            <p>{{ factura.cliente.nombre }}</p>
-                        </v-col>
-                    </v-row>
+                    <form-actualizar-detalle-component @cerrar="limpiar()" @submit="fetchFactura()" :item="item"/>
                 </v-card-text>
-
-                <v-card-text>
-                    <v-data-table :headers="headers" :items="factura.detalles">
-
-                        <template v-slot:item.valor="{ item }">
-                            {{ $formatPesos(item.valor) }}
-                        </template>
-
-                        <template v-slot:item.created_at="{ item }">
-                            {{ $moment(item.created_at).format('DD/MM/YYYY-HH:mm') }}
-                        </template>
-
-                    </v-data-table>
-                </v-card-text>
-
             </v-card>
-        </v-col>
-    </v-row>
+        </v-dialog>
+
+    </v-card>
 </template>
 <script>
+import FormActualizarDetalleComponent from '@/components/factura/FormActualizarDetalleComponent.vue';
 export default {
     name: "FacturaUniquePage",
+    components: {
+        FormActualizarDetalleComponent
+    },
     data() {
         return {
+            dialogs: {
+                editar: false
+            },
             factura: {
                 id: null,
                 factura: 'esperando...',
@@ -78,7 +96,9 @@ export default {
                 { text: 'Operador', value: 'operador.nombre' },
                 { text: 'Fecha', value: 'created_at' },
                 { text: 'valor', value: 'valor' },
+                { text: 'Acciones', value: 'actions' }
             ],
+            item: null,
             loading: false,
         }
     },
@@ -102,6 +122,16 @@ export default {
                 this.loading = false;
             }
         },
+
+        limpiar(){
+            this.item = null
+            this.dialogs.editar = false
+        },
+
+        editar(item){
+            this.item = item
+            this.dialogs.editar = true
+        }
     }
 }
 </script>
