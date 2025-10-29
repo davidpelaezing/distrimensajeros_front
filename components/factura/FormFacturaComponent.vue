@@ -141,8 +141,8 @@ export default {
             this.form.fecha = '2024-06-08';
             this.form.factura = null;
             this.form.recibo = null;
-            //this.form.mensajero_id = null;
-            //this.form.cliente_id = null;
+            this.form.mensajero_id = null;
+            this.form.cliente_id = null;
             this.form.hora_salida = null;
             this.form.valor = null;
 

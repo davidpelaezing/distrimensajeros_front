@@ -1,7 +1,8 @@
 <template>
     <v-card :loading="loading" :disabled="loading" elevation="0" class="rounded-xxl pa-4 overflow-hidden">
         <v-card-text>
-            <v-data-table :headers="headers" :items="facturas" :search="search" sort-by="calories">
+            <v-data-table :headers="headers" :items="facturas" :server-items-length="total" :options.sync="options"
+                :items-per-page="perPage" :search="search" sort-by="calories">
                 <template v-slot:top>
                     <v-toolbar flat>
                         <v-toolbar-title class="d-flex align-center">
@@ -119,6 +120,14 @@ export default {
         search: '',
         dialog: false,
         dialogCerrarFactura: false,
+        total: 0,
+        perPage: 10,
+        options: {
+            page: 1,
+            itemsPerPage: 10,
+            sortBy: [],
+            sortDesc: [],
+        },
         estados: [
             { id: 1, nombre: 'Despachado' },
             { id: 2, nombre: 'Pendiente' },
@@ -189,6 +198,13 @@ export default {
                 this.facturaCerrar = {};
                 this.listar()
             }
+        },
+        options: {
+            handler(val) {
+                this.perPage = val.itemsPerPage
+                this.listar()
+            },
+            deep: true
         }
 
     },
@@ -205,12 +221,23 @@ export default {
         async listar() {
             try {
                 this.loading = true
+
+                const { page, itemsPerPage } = this.options
+
                 const { data } = await this.$axios.get('factura/listar', {
-                    params: this.filtro
+                    params: {
+                        ...this.filtro,
+                        page,
+                        per_page: itemsPerPage
+                    }
                 })
-                this.facturas = data
+
+                this.facturas = data.data
+                this.total = data.total
+                this.perPage = data.per_page
+
             } catch (error) {
-                console.log('Erro al listar')
+                console.error('Error al listar', error)
             } finally {
                 this.loading = false
             }
