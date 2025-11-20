@@ -1,8 +1,7 @@
 <template>
     <v-card :loading="loading" :disabled="loading" elevation="0" class="rounded-xxl pa-4 overflow-hidden">
         <v-card-text>
-            <v-data-table :headers="headers" :items="facturas" :server-items-length="total" :options.sync="options"
-                :items-per-page="perPage" :search="search" sort-by="calories">
+            <v-data-table :headers="headers" :items="facturas">
                 <template v-slot:top>
                     <v-toolbar flat>
                         <v-toolbar-title class="d-flex align-center">
