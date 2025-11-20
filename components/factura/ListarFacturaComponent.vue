@@ -222,19 +222,19 @@ export default {
             try {
                 this.loading = true
 
-                const { page, itemsPerPage } = this.options
+                // const { page, itemsPerPage } = this.options
 
                 const { data } = await this.$axios.get('factura/listar', {
                     params: {
-                        ...this.filtro,
-                        page,
-                        per_page: itemsPerPage
+                        ...this.filtro
+                        // page,
+                        // per_page: itemsPerPage
                     }
                 })
 
-                this.facturas = data.data
-                this.total = data.total
-                this.perPage = data.per_page
+                this.facturas = data
+                // this.total = data.total
+                // this.perPage = data.per_page
 
             } catch (error) {
                 console.error('Error al listar', error)
