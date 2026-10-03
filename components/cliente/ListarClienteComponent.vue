@@ -1,69 +1,120 @@
 <template>
-    <v-card :loading="loading" :disabled="loading" elevation="0" class="rounded-xxl pa-4 overflow-hidden">
+    <div>
+        <PageHeaderComponent title="Clientes" subtitle="Administra los clientes que despachan con la empresa" icon="mdi-account-multiple-check">
+            <v-btn color="primary" depressed large class="rounded-lg px-5" @click="nuevo">
+                <v-icon left>mdi-plus</v-icon>
+                Nuevo cliente
+            </v-btn>
+        </PageHeaderComponent>
 
-        <v-data-table :headers="headers" :items="clientes">
+        <ResumenComponent :items="resumen" :loading="loading && !clientes.length" />
 
-            <template v-slot:top>
-                <v-toolbar flat>
-                    <v-toolbar-title class="d-flex align-center">
-                        Clientes
-                    </v-toolbar-title>
-                    <v-divider class="mx-4" inset vertical></v-divider>
-                    <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="500px">
+        <v-card flat class="rounded-xl overflow-hidden fade-up" style="animation-delay: 320ms">
+            <v-card-title class="px-5 py-4">
+                <span class="text-subtitle-1 font-weight-bold">Listado de clientes</span>
+                <v-spacer></v-spacer>
+                <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" placeholder="Buscar..." outlined dense
+                    hide-details clearable class="mt-2 mt-sm-0" style="max-width: 280px"></v-text-field>
+            </v-card-title>
+            <v-divider></v-divider>
 
+            <v-data-table :headers="headers" :items="clientes" :search="search" :loading="loading"
+                loading-text="Cargando clientes..." no-data-text="Aún no hay clientes registrados"
+                no-results-text="No se encontraron coincidencias">
+
+                <template v-slot:[`item.id`]="{ item }">
+                    <span class="grey--text text--darken-1">#{{ item.id }}</span>
+                </template>
+
+                <template v-slot:[`item.nombre`]="{ item }">
+                    <div class="d-flex align-center py-2">
+                        <v-avatar size="34" color="primary lighten-5" class="mr-3">
+                            <span class="primary--text text-caption font-weight-bold">{{ iniciales(item.nombre) }}</span>
+                        </v-avatar>
+                        <span class="font-weight-medium">{{ item.nombre }}</span>
+                    </div>
+                </template>
+
+                <template v-slot:[`item.activo`]="{ item }">
+                    <v-tooltip top>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                                Nuevo cliente
+                            <v-chip small v-bind="attrs" v-on="on" @click="cambiarEstado(item)"
+                                :color="item.activo ? 'green lighten-5' : 'red lighten-5'"
+                                :text-color="item.activo ? 'green darken-3' : 'red darken-3'" class="font-weight-medium">
+                                <v-icon x-small left>mdi-circle</v-icon>
+                                {{ item.activo ? 'Activo' : 'Inactivo' }}
+                            </v-chip>
+                        </template>
+                        <span>Clic para {{ item.activo ? 'desactivar' : 'activar' }}</span>
+                    </v-tooltip>
+                </template>
+
+                <template v-slot:[`item.actions`]="{ item }">
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn icon small color="primary" v-bind="attrs" v-on="on" @click="editar(item)">
+                                <v-icon small>mdi-pencil-outline</v-icon>
                             </v-btn>
                         </template>
+                        <span>Editar</span>
+                    </v-tooltip>
+                </template>
+            </v-data-table>
+        </v-card>
 
-                        <FormClienteComponent @submit="listar()" @cerrar="dialog = false" :editando="editando" :cliente="cliente"/>
-
-                    </v-dialog>
-                </v-toolbar>
-            </template>
-
-            <template v-slot:item.activo="{ item }">
-                <v-chip :color="item.activo ? 'success' : 'error'" @click="cambiarEstado(item)">
-                    {{ item.activo ? "activo" : "Inactivo" }}
-                </v-chip>
-            </template>
-
-            <template v-slot:item.actions="{ item }">
-                <v-chip outlined @click="editar(item)">Editar</v-chip>
-            </template>
-        </v-data-table>
+        <v-dialog v-model="dialog" max-width="480px" content-class="rounded-xl">
+            <FormClienteComponent @submit="listar()" @cerrar="dialog = false" :editando="editando" :cliente="cliente" />
+        </v-dialog>
 
         <AlertComponent ref="alertComponent" />
-    </v-card>
+    </div>
 </template>
 <script>
 import AlertComponent from '@/components/helpers/AlertComponent'
+import PageHeaderComponent from '@/components/helpers/PageHeaderComponent'
+import ResumenComponent from '@/components/helpers/ResumenComponent'
 import FormClienteComponent from '@/components/cliente/FormClienteComponent'
 
 export default {
     components: {
         AlertComponent,
+        PageHeaderComponent,
+        ResumenComponent,
         FormClienteComponent
     },
     data: () => ({
         loading: false,
+        search: '',
         clientes: [],
         cliente: null,
         editando: false,
         dialog: false,
         headers: [
-            { text: 'id#', value: 'id' },
-            { text: 'Nombre', value: 'nombre'},
-            { text: 'Estado', value: 'activo'},
-            { text: 'Acciones', value: 'actions', sortable: false },
+            { text: 'ID', value: 'id', width: 90 },
+            { text: 'Nombre', value: 'nombre' },
+            { text: 'Estado', value: 'activo', width: 150 },
+            { text: 'Acciones', value: 'actions', sortable: false, align: 'end', width: 110 },
         ],
     }),
 
+    computed: {
+        /**
+         * Totales para las tarjetas de resumen
+         */
+        resumen() {
+            const total = this.clientes.length
+            const activos = this.clientes.filter(i => i.activo).length
+            return [
+                { label: 'Total', value: total, icon: 'mdi-format-list-bulleted', color: 'primary', bg: 'primary lighten-5' },
+                { label: 'Activos', value: activos, icon: 'mdi-check-circle-outline', color: 'green darken-2', bg: 'green lighten-5' },
+                { label: 'Inactivos', value: total - activos, icon: 'mdi-close-circle-outline', color: 'red darken-2', bg: 'red lighten-5' },
+            ]
+        },
+    },
+
     watch: {
         dialog(val) {
-            if(!val){
+            if (!val) {
                 this.editando = false
                 this.cliente = null
             }
@@ -94,28 +145,44 @@ export default {
         /**
          * cambia el estado
          */
-        async cambiarEstado(item){
-            const request = { activo : !item.activo }
+        async cambiarEstado(item) {
+            const request = { activo: !item.activo }
             try {
-                const { data } = await this.$axios.put('cliente/cambiar-estado/' + item.id, request)
+                await this.$axios.put('cliente/cambiar-estado/' + item.id, request)
                 this.$toast.success('El cliente ' + item.nombre + ' paso a estar ' + (request.activo ? "activo" : "Inactivo"))
                 this.listar()
             } catch (error) {
-                this.toast.error('Hubo un error al intentar cambiar el estado')
+                this.$toast.error('Hubo un error al intentar cambiar el estado')
                 console.log(error.response)
             }
         },
 
         /**
-         * elimina un usuario
+         * abre el formulario para crear
          */
-        editar(item){
+        nuevo() {
+            this.editando = false
+            this.cliente = null
+            this.dialog = true
+        },
+
+        /**
+         * abre el formulario para editar
+         */
+        editar(item) {
             this.editando = true
             this.cliente = item
             this.dialog = true
-        }
+        },
+
+        /**
+         * iniciales para el avatar
+         */
+        iniciales(nombre) {
+            if (!nombre) return '?'
+            return nombre.trim().split(/\s+/).slice(0, 2).map(p => p.charAt(0)).join('').toUpperCase()
+        },
 
     },
 }
-
 </script>

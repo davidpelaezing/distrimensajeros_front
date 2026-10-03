@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import es from 'vuetify/es5/locale/es'
 
 export default {
     ssr: false,
@@ -20,13 +21,22 @@ export default {
             { name: 'format-detection', content: 'telephone=no' }
         ],
         link: [
-            { rel: 'icon', type: 'image/x-icon', href: 'iso1.ico' }
+            { rel: 'icon', type: 'image/x-icon', href: 'iso1.ico' },
+            { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+            { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap' }
         ]
     },
 
     // Global CSS: https://go.nuxtjs.dev/config-css
     css: [
+        '~/assets/css/app.css'
     ],
+
+    // Transición suave entre páginas (estilos en assets/css/app.css)
+    pageTransition: {
+        name: 'page',
+        mode: 'out-in'
+    },
 
     // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
     plugins: [
@@ -79,6 +89,10 @@ export default {
     // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
     vuetify: {
         customVariables: ['~/assets/variables.scss'],
+        lang: {
+            locales: { es },
+            current: 'es'
+        },
         theme: {
             dark: false,
             themes: {

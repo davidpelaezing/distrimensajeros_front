@@ -1,14 +1,15 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="320">
-        <v-card elevation="0" class="rounded-xxl overflow-hidden">
-            <v-card-title>¿Estás seguro de continuar?</v-card-title>
-            <v-card-text>{{ mensaje }}</v-card-text>
-            <v-card-actions>
-                <div class="ml-auto">
-                    <v-btn @click="cancelar" text color="error">cancelar</v-btn>
-                    <v-btn @click="confirmar" text color="secondary">cofirmar</v-btn>
-                </div>
-            </v-card-actions>
+    <v-dialog v-model="dialog" persistent max-width="360" content-class="rounded-xl">
+        <v-card flat class="rounded-xl overflow-hidden text-center pa-6">
+            <v-avatar size="56" color="orange lighten-5" class="mb-4">
+                <v-icon color="orange darken-2" size="30">mdi-alert-outline</v-icon>
+            </v-avatar>
+            <div class="text-h6 font-weight-bold mb-2">¿Estás seguro de continuar?</div>
+            <div class="text-body-2 grey--text text--darken-1 mb-6">{{ mensaje }}</div>
+            <div class="d-flex">
+                <v-btn @click="cancelar" outlined color="grey darken-1" class="rounded-lg flex-grow-1 mr-2">Cancelar</v-btn>
+                <v-btn @click="confirmar" depressed color="primary" class="rounded-lg flex-grow-1">Confirmar</v-btn>
+            </div>
         </v-card>
     </v-dialog>
 </template>
@@ -41,8 +42,3 @@ export default {
     }
 };
 </script>
-<style>
-.v-dialog.v-dialog--active.v-dialog--persistent {
-    border-radius: 24px;
-}
-</style>

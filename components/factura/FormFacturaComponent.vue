@@ -1,38 +1,63 @@
 <template>
 
-    <v-card :loading="loading" :disabled="loading" elevation="0" class="rounded-xxl pa-4 overflow-hidden">
-        <v-card-title class="d-flex align-center">
-            {{ editando ? 'Editar' : 'Crear'}} factura
-        </v-card-title>
-        <v-card-text>
+    <v-card flat class="rounded-xl overflow-hidden">
+        <div class="d-flex align-center px-6 pt-6 pb-2">
+            <v-avatar size="42" rounded="lg" color="primary lighten-5" class="mr-3">
+                <v-icon color="primary">{{ editando ? 'mdi-file-document-edit-outline' : 'mdi-file-document-plus-outline' }}</v-icon>
+            </v-avatar>
+            <div>
+                <div class="text-h6 font-weight-bold">{{ editando ? 'Editar' : 'Nueva' }} factura</div>
+                <div class="text-caption grey--text text--darken-1">
+                    {{ editando ? 'Actualiza los datos de la factura' : 'Asigna la factura a un mensajero y cliente' }}
+                </div>
+            </div>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="$emit('cerrar')">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+        </div>
 
-            <v-form v-model="valid" ref="form" lazy-validation>
-                <v-row>
-                    <v-col cols="12">
-                        <v-autocomplete v-model="form.mensajero_id" :rules="rules.mensajero_id" :items="mensajeros" item-value="id" item-text="nombre"
-                            label="Mensajeros"></v-autocomplete>
+        <v-card-text class="px-6 pt-5 pb-2">
+            <v-form v-model="valid" ref="form" lazy-validation :disabled="loading">
+                <v-row dense>
+                    <v-col cols="12" sm="6">
+                        <v-autocomplete v-model="form.mensajero_id" :rules="rules.mensajero_id" :items="mensajeros"
+                            item-value="id" item-text="nombre" label="Mensajero" outlined
+                            prepend-inner-icon="mdi-motorbike" no-data-text="Sin resultados"></v-autocomplete>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <v-autocomplete v-model="form.cliente_id" :rules="rules.cliente_id" :items="clientes"
+                            item-value="id" item-text="nombre" label="Cliente" outlined
+                            prepend-inner-icon="mdi-account-multiple-check-outline"
+                            no-data-text="Sin resultados"></v-autocomplete>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <v-text-field v-model="form.factura" :rules="rules.factura" ref="factura" label="Nro factura"
+                            outlined prepend-inner-icon="mdi-pound" required></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6">
+                        <v-text-field v-model="form.recibo" :rules="rules.recibo" label="Recibo" outlined
+                            prepend-inner-icon="mdi-receipt-text-outline" required></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                        <v-autocomplete v-model="form.cliente_id" :rules="rules.cliente_id" :items="clientes" item-value="id" item-text="nombre" label="Clientes"></v-autocomplete>
-                    </v-col>
-                    <v-col cols="12">
-                        <v-text-field v-model="form.factura" :rules="rules.factura" ref="factura" label="Factura" required></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                        <v-text-field v-model="form.recibo" :rules="rules.recibo" label="Recibo" required></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                        <v-text-field v-model.number="form.valor" :rules="rules.valor" label="Valor" @keyup.enter="submit()"
-                            required></v-text-field>
+                        <v-text-field v-model.number="form.valor" :rules="rules.valor" label="Valor" outlined
+                            prepend-inner-icon="mdi-cash" prefix="$" type="number" min="0"
+                            :hint="form.valor ? $formatPesos(form.valor) : ''" persistent-hint
+                            @keyup.enter="submit()" required></v-text-field>
                     </v-col>
                 </v-row>
             </v-form>
-
         </v-card-text>
 
-        <v-card-actions>
-            <v-btn color="error" @click="$emit('cerrar')">Cancelar</v-btn>
-            <v-btn color="primary" @click="submit(true)">{{ editando ? 'Actualizar' : 'Crear'}}</v-btn>
+        <v-divider class="mt-2"></v-divider>
+
+        <v-card-actions class="px-6 py-4">
+            <v-spacer></v-spacer>
+            <v-btn text class="px-4" @click="$emit('cerrar')">Cancelar</v-btn>
+            <v-btn color="primary" depressed class="rounded-lg px-5" :loading="loading" @click="submit(true)">
+                <v-icon left small>mdi-content-save-outline</v-icon>
+                {{ editando ? 'Actualizar' : 'Crear factura' }}
+            </v-btn>
         </v-card-actions>
 
     </v-card>
