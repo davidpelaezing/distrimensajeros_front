@@ -6,11 +6,12 @@
 
             <!-- Marca -->
             <div class="d-flex align-center px-4 py-5" :class="{ 'justify-center px-0': miniVariant }">
-                <v-avatar v-if="$config.comercioLogo" color="secondary" size="42" rounded="lg">
-                    <v-img :src="$config.comercioLogo" :alt="$config.comercioNombre" contain />
+                <v-avatar color="secondary" size="42" rounded="lg">
+                    <v-img v-if="$config.comercioLogo" :src="$config.comercioLogo" :alt="$config.comercioNombre" contain />
+                    <v-icon v-else color="primary">mdi-motorbike</v-icon>
                 </v-avatar>
                 <v-fade-transition>
-                    <div v-if="!miniVariant" :class="{ 'ml-3': $config.comercioLogo }" style="line-height: 1.15">
+                    <div v-if="!miniVariant" class="ml-3" style="line-height: 1.15">
                         <div class="text-subtitle-1 font-weight-bold white--text">{{ $config.comercioNombre }}</div>
                         <div class="secondary rounded-pill my-2" style="width: 40px; height: 3px" aria-hidden="true"></div>
                         <div class="text-caption white--text font-weight-bold">{{ $config.comercioSlogan }}</div>

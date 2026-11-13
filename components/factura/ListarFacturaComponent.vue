@@ -28,7 +28,7 @@
                         <v-row dense>
                             <v-col cols="12" sm="6" md="3">
                                 <v-text-field v-model="filtro.factura" label="# de factura" outlined dense clearable
-                                    prepend-inner-icon="mdi-pound" @keyup.enter="listar()" />
+                                    prepend-inner-icon="mdi-pound" @keyup.enter="filtrar()" />
                             </v-col>
                             <v-col cols="12" sm="6" md="3">
                                 <v-autocomplete v-model="filtro.cliente_id" :items="clientes" item-value="id"
@@ -61,7 +61,7 @@
                             </v-col>
                             <v-col cols="12" sm="6" md="3" class="d-flex">
                                 <v-btn color="primary" depressed class="rounded-lg flex-grow-1 mr-2" height="40"
-                                    :loading="loading" @click="listar()">
+                                    :loading="loading" @click="filtrar()">
                                     <v-icon left small>mdi-magnify</v-icon>
                                     Filtrar
                                 </v-btn>
@@ -82,12 +82,14 @@
             <v-card-title class="px-5 py-4">
                 <span class="text-subtitle-1 font-weight-bold">Listado de facturas</span>
                 <v-spacer></v-spacer>
-                <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" placeholder="Buscar en resultados..."
+                <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" placeholder="Buscar en esta página..."
                     outlined dense hide-details clearable class="mt-2 mt-sm-0" style="max-width: 280px"></v-text-field>
             </v-card-title>
             <v-divider></v-divider>
 
             <v-data-table :headers="headers" :items="facturas" :search="search" :loading="loading"
+                hide-default-footer disable-pagination
+                :items-per-page="paginacion.cantidadRegistros"
                 loading-text="Cargando facturas..." no-data-text="No hay facturas para los filtros seleccionados"
                 no-results-text="No se encontraron coincidencias">
 
@@ -159,6 +161,18 @@
                 </template>
 
             </v-data-table>
+
+            <v-row class="px-5 pt-4 pb-2" align="center">
+                <v-col cols="12" md="9">
+                    <v-pagination v-model="paginacion.pagina" :length="paginacion.total"
+                        :total-visible="9" :disabled="loading" @input="listar()" />
+                </v-col>
+                <v-col cols="12" sm="6" md="3">
+                    <v-select v-model="paginacion.cantidadRegistros" :items="[5, 10, 20, 50, 100]"
+                        label="Registros por página" dense outlined hide-details
+                        :disabled="loading" @change="filtrar()" />
+                </v-col>
+            </v-row>
         </v-card>
 
         <v-dialog v-model="dialog" max-width="600px" content-class="rounded-xl">
@@ -203,13 +217,10 @@ export default {
         mostrarFiltros: true,
         dialog: false,
         dialogCerrarFactura: false,
-        total: 0,
-        perPage: 10,
-        options: {
-            page: 1,
-            itemsPerPage: 10,
-            sortBy: [],
-            sortDesc: [],
+        paginacion: {
+            pagina: 1,
+            cantidadRegistros: 10,
+            total: 0,
         },
         estados: [
             { id: 1, nombre: 'Despachado' },
@@ -245,7 +256,7 @@ export default {
             const total = this.facturas.length
             const pendientes = this.facturas.filter(f => f.estado_id == 2).length
             const completas = this.facturas.filter(f => f.estado_id == 3).length
-            const valor = this.facturas.reduce((acc, f) => acc + (Number(f.valor) || 0), 0)
+            const valor = this.facturas.reduce((total, factura) => total + Number(factura.valor), 0)
             return [
                 { label: 'Facturas', value: total, icon: 'mdi-note-multiple-outline', color: 'primary', bg: 'primary lighten-5' },
                 { label: 'Pendientes', value: pendientes, icon: 'mdi-clock-outline', color: 'orange darken-2', bg: 'orange lighten-5' },
@@ -276,13 +287,7 @@ export default {
                 this.listar()
             }
         },
-        options: {
-            handler(val) {
-                this.perPage = val.itemsPerPage
-                this.listar()
-            },
-            deep: true
-        }
+
 
     },
 
@@ -294,27 +299,25 @@ export default {
     },
 
     methods: {
+        filtrar() {
+            this.paginacion.pagina = 1
+            this.listar()
+        },
 
         async listar() {
             try {
                 this.loading = true
-
-                // const { page, itemsPerPage } = this.options
-
                 const { data } = await this.$axios.get('factura/listar', {
                     params: {
-                        ...this.filtro
-                        // page,
-                        // per_page: itemsPerPage
+                        ...this.filtro,
+                        'paginacion[pagina]': this.paginacion.pagina,
+                        'paginacion[cantidadRegistros]': this.paginacion.cantidadRegistros,
                     }
                 })
-
-                this.facturas = data
-                // this.total = data.total
-                // this.perPage = data.per_page
-
+                this.facturas = data.data
+                this.paginacion.total = data.last_page
             } catch (error) {
-                console.error('Error al listar', error)
+                this.$toast.error('Error al listar las facturas')
             } finally {
                 this.loading = false
             }
@@ -384,7 +387,7 @@ export default {
             this.filtro.estado_id = null;
             this.filtro.cliente_id = null;
             this.filtro.forma_pago_id = null;
-            this.listar();
+            this.filtrar();
         }
 
     }
