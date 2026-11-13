@@ -12,10 +12,10 @@
                 style="position: absolute; bottom: -120px; left: -90px; opacity: .05"></v-sheet>
 
             <div class="d-flex align-center fade-up" style="position: relative">
-                <v-avatar color="secondary" size="44" rounded="lg" class="mr-3">
-                    <v-icon color="primary">mdi-motorbike</v-icon>
+                <v-avatar v-if="$config.comercioLogo" color="secondary" size="44" rounded="lg" class="mr-3">
+                    <v-img :src="$config.comercioLogo" :alt="$config.comercioNombre" contain />
                 </v-avatar>
-                <span class="text-h6 font-weight-bold">Distri Mensajeros</span>
+                <span class="text-h6 font-weight-bold">{{ $config.comercioNombre }}</span>
             </div>
 
             <div style="position: relative; max-width: 520px">
@@ -26,7 +26,7 @@
                     </v-avatar>
                 </div>
                 <h1 class="text-h3 font-weight-bold mb-4 fade-up" style="animation-delay: 120ms; line-height: 1.15">
-                    Gestiona tus entregas en <span class="secondary--text">un solo lugar</span>
+                    {{ $config.comercioSlogan }}
                 </h1>
                 <p class="text-body-1 mb-0 fade-up" style="animation-delay: 220ms; opacity: .75">
                     Facturas, clientes, mensajeros y reportes organizados para que tu operación fluya sin
@@ -35,7 +35,7 @@
             </div>
 
             <div class="text-caption" style="position: relative; opacity: .6">
-                &copy; {{ new Date().getFullYear() }} Distri Mensajeros
+                &copy; {{ new Date().getFullYear() }} {{ $config.comercioNombre }}
             </div>
         </v-col>
 
@@ -43,10 +43,10 @@
         <v-col cols="12" md="6" lg="5" class="d-flex align-center justify-center pa-6">
             <div class="fade-up" style="width: 100%; max-width: 400px; animation-delay: 150ms">
                 <div class="d-flex d-md-none align-center mb-10">
-                    <v-avatar color="primary" size="42" rounded="lg" class="mr-3">
-                        <v-icon color="secondary">mdi-motorbike</v-icon>
+                    <v-avatar v-if="$config.comercioLogo" color="primary" size="42" rounded="lg" class="mr-3">
+                        <v-img :src="$config.comercioLogo" :alt="$config.comercioNombre" contain />
                     </v-avatar>
-                    <span class="text-h6 font-weight-bold primary--text">Distri Mensajeros</span>
+                    <span class="text-h6 font-weight-bold primary--text">{{ $config.comercioNombre }}</span>
                 </div>
 
                 <h2 class="text-h4 font-weight-bold primary--text mb-2">Bienvenido</h2>

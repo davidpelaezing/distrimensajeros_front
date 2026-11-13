@@ -6,18 +6,19 @@
 
             <!-- Marca -->
             <div class="d-flex align-center px-4 py-5" :class="{ 'justify-center px-0': miniVariant }">
-                <v-avatar color="secondary" size="42" rounded="lg">
-                    <v-icon color="primary">mdi-motorbike</v-icon>
+                <v-avatar v-if="$config.comercioLogo" color="secondary" size="42" rounded="lg">
+                    <v-img :src="$config.comercioLogo" :alt="$config.comercioNombre" contain />
                 </v-avatar>
                 <v-fade-transition>
-                    <div v-if="!miniVariant" class="ml-3" style="line-height: 1.15">
-                        <div class="text-subtitle-1 font-weight-bold">Distri</div>
-                        <div class="text-caption secondary--text font-weight-bold">MENSAJEROS</div>
+                    <div v-if="!miniVariant" :class="{ 'ml-3': $config.comercioLogo }" style="line-height: 1.15">
+                        <div class="text-subtitle-1 font-weight-bold white--text">{{ $config.comercioNombre }}</div>
+                        <div class="secondary rounded-pill my-2" style="width: 40px; height: 3px" aria-hidden="true"></div>
+                        <div class="text-caption white--text font-weight-bold">{{ $config.comercioSlogan }}</div>
                     </div>
                 </v-fade-transition>
             </div>
 
-            <div v-if="!miniVariant" class="text-overline px-6 mt-2" style="opacity: .5">Menú</div>
+            <div v-if="!miniVariant" class="text-overline white--text px-6 mt-2">Menú</div>
 
             <v-list nav class="px-3">
                 <v-tooltip v-for="item in menu" :key="item.link" right :disabled="!miniVariant">
@@ -71,7 +72,7 @@
             </v-btn>
 
             <div class="ml-2">
-                <div class="text-caption grey--text text--darken-1">Distri Mensajeros</div>
+                <div class="text-caption grey--text text--darken-1">{{ $config.comercioNombre }}</div>
                 <div class="text-subtitle-1 font-weight-bold primary--text" style="line-height: 1.1">{{ tituloPagina }}</div>
             </div>
 
@@ -122,7 +123,7 @@
         </v-main>
 
         <v-footer app inset color="fondo" class="justify-center">
-            <span class="text-caption grey--text">&copy; {{ new Date().getFullYear() }} Distri Mensajeros</span>
+            <span class="text-caption grey--text">&copy; {{ new Date().getFullYear() }} {{ $config.comercioNombre }}</span>
         </v-footer>
     </v-app>
 </template>
@@ -143,14 +144,6 @@ export default {
             right: true,
             rightDrawer: false,
             selectedItem: 0,
-            items: [
-                { text: 'Facturas', icon: 'mdi-note-multiple', link: '/', roles: ['administrador', 'supervisor', 'operario'] },
-                { text: 'Clientes', icon: 'mdi-account-multiple-check', link: '/clientes', roles: ['administrador', 'supervisor', 'operario'] },
-                { text: 'Mensajeros', icon: 'mdi-motorbike', link: '/mensajeros', roles: ['administrador', 'supervisor'] },
-                { text: 'Formas de pago', icon: 'mdi-credit-card-multiple-outline', link: '/forma-pagos', roles: ['administrador', 'supervisor'] },
-                { text: 'Reportes', icon: 'mdi-file-chart', link: '/reportes', roles: ['administrador', 'supervisor'] },
-                { text: 'Usuarios', icon: 'mdi-account-multiple', link: '/usuarios', roles: ['administrador'] },
-            ],
         }
     },
     computed: {
@@ -158,7 +151,7 @@ export default {
             return this.$store.state.auth.authUser || {};
         },
         menu() {
-            return this.items.filter(item => item.roles.includes(this.getRol()));
+            return this.$menu.filter(item => item.roles.includes(this.getRol()));
         },
         iniciales() {
             const nombre = (this.usuario.name || '').trim();
@@ -166,7 +159,7 @@ export default {
             return nombre.split(/\s+/).slice(0, 2).map(p => p.charAt(0)).join('').toUpperCase();
         },
         tituloPagina() {
-            const actual = this.items.find(item => item.link === this.$route.path);
+            const actual = this.$menu.find(item => item.link === this.$route.path);
             return actual ? actual.text : 'Facturas';
         },
         fechaHoy() {
