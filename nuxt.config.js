@@ -9,7 +9,7 @@ export default {
 
     publicRuntimeConfig: {
         comercioNombre: process.env.COMERCIO_NOMBRE || 'Distri Mensajeros',
-        comercioLogo: process.env.COMERCIO_LOGO || '/logo.png',
+        comercioLogo: process.env.COMERCIO_LOGO || '',
         comercioSlogan: process.env.COMERCIO_SLOGAN || 'Gestiona tus entregas en un solo lugar',
     },
     // Target: https://go.nuxtjs.dev/config-target

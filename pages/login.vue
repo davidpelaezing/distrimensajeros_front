@@ -12,8 +12,9 @@
                 style="position: absolute; bottom: -120px; left: -90px; opacity: .05"></v-sheet>
 
             <div class="d-flex align-center fade-up" style="position: relative">
-                <v-avatar v-if="$config.comercioLogo" color="secondary" size="44" rounded="lg" class="mr-3">
-                    <v-img :src="$config.comercioLogo" :alt="$config.comercioNombre" contain />
+                <v-avatar color="secondary" size="44" rounded="lg" class="mr-3">
+                    <v-img v-if="$config.comercioLogo" :src="$config.comercioLogo" :alt="$config.comercioNombre" contain />
+                    <v-icon v-else color="primary">mdi-motorbike</v-icon>
                 </v-avatar>
                 <span class="text-h6 font-weight-bold">{{ $config.comercioNombre }}</span>
             </div>
@@ -43,8 +44,9 @@
         <v-col cols="12" md="6" lg="5" class="d-flex align-center justify-center pa-6">
             <div class="fade-up" style="width: 100%; max-width: 400px; animation-delay: 150ms">
                 <div class="d-flex d-md-none align-center mb-10">
-                    <v-avatar v-if="$config.comercioLogo" color="primary" size="42" rounded="lg" class="mr-3">
-                        <v-img :src="$config.comercioLogo" :alt="$config.comercioNombre" contain />
+                    <v-avatar color="primary" size="42" rounded="lg" class="mr-3">
+                        <v-img v-if="$config.comercioLogo" :src="$config.comercioLogo" :alt="$config.comercioNombre" contain />
+                        <v-icon v-else color="secondary">mdi-motorbike</v-icon>
                     </v-avatar>
                     <span class="text-h6 font-weight-bold primary--text">{{ $config.comercioNombre }}</span>
                 </div>
