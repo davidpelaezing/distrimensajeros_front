@@ -1,8 +1,17 @@
 import colors from 'vuetify/es5/util/colors'
 import es from 'vuetify/es5/locale/es'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 export default {
     ssr: false,
+
+    publicRuntimeConfig: {
+        comercioNombre: process.env.COMERCIO_NOMBRE || 'Distri Mensajeros',
+        comercioLogo: process.env.COMERCIO_LOGO || '/logo.png',
+        comercioSlogan: process.env.COMERCIO_SLOGAN || 'Gestiona tus entregas en un solo lugar',
+    },
     // Target: https://go.nuxtjs.dev/config-target
     target: 'server',
 
@@ -12,8 +21,8 @@ export default {
 
     // Global page headers: https://go.nuxtjs.dev/config-head
     head: {
-        titleTemplate: '%s - distri-mensajeros',
-        title: 'distri-mensajeros',
+        titleTemplate: '%s - ' + (process.env.COMERCIO_NOMBRE || 'Distri Mensajeros'),
+        title: process.env.COMERCIO_NOMBRE || 'Distri Mensajeros',
         meta: [
             { charset: 'utf-8' },
             { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -43,7 +52,8 @@ export default {
         '@/plugins/localStorage.js',
         '@/plugins/axios.js',
         '@/plugins/moment.js',
-        '@/plugins/formatPesos.js'
+        '@/plugins/formatPesos.js',
+        '@/plugins/menu.js'
     ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components
